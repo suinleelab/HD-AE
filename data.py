@@ -31,5 +31,5 @@ class SimpleDataset(Dataset):
         return self.X.shape[0]
 
     def __getitem__(self, index):
-        return self.X.iloc[index].to_numpy()
+        return self.X[index]
     
