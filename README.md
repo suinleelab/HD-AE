@@ -5,7 +5,7 @@
 <img src="github_fig.png/">
 
 
-HD-AE (the Hilbert-Schmidt Deconfounded Autoencoder) is a package for producing generalizable (i.e., across
+HD-AE (the <ins>H</ins>ilbert-Schmidt <ins>D</ins>econfounded <ins>A</ins>uto<ins>e</ins>ncoder) is a package for producing generalizable (i.e., across
 labs, technologies, etc.) embedding models for scRNA-seq data. HD-AE enables the training of "reference"
 embedding models, that can later be used to embed data from future experiments into a common space _without
 requiring any retraining of the model_. Please see <a href="404">our preprint</a> for further technical details.
