@@ -3,6 +3,7 @@ import os
 import random
 from os import listdir
 from os.path import join, isfile
+import pdb
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -84,15 +85,7 @@ def silhouette_score(adata, label_key):
     return scores
 
 
-def hilbert_schmidt(x, y, sigma=1):
-    m = x.shape[0]
-    K = gram_matrix(x, sigma=sigma)
-    y = y.float().reshape(-1, 1)
-    L = gram_matrix(y, sigma=sigma)
-    H = torch.eye(m) - 1.0 / m * torch.ones((m, m))
-    H = H.float().cuda()
-    HSIC = torch.trace(torch.mm(L, torch.mm(H, torch.mm(K, H)))) / ((m - 1) ** 2)
-    return HSIC
+
 
 
 def gram_matrix(x, sigma=1):
