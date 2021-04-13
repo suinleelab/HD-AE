@@ -19,7 +19,11 @@ requiring any retraining of the model_. Please see <a href="404">our preprint</a
 
 ### Installation
 
-The simplest way to get started with HD-AE is to clone this repo and run `pip install .`.
+The simplest way to get started with HD-AE is to clone this repo and run 
+
+```
+pip install .
+```
 
 ### Usage
 
