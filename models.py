@@ -8,6 +8,8 @@ from torch.utils.data import DataLoader
 from data import DatasetWithConfounder, SimpleDataset
 from utils import one_hot, gram_matrix
 
+import pdb
+
 
 class HD_AE_model(pl.LightningModule):
     def __init__(self, num_batches, hsic_penalty, lr, layer_sizes):
@@ -83,9 +85,13 @@ class HD_AE_model(pl.LightningModule):
 
 
 class HD_AE:
-    def __init__(self, adata, batch_key, layer_sizes, learning_rate=1e-3, hsic_penalty=1):
+    def __init__(self, adata, batch_key, hidden_layer_sizes, embedding_dimension, learning_rate=1e-3, hsic_penalty=1):
         self.adata = adata
         self.batch_key = batch_key
+        self.gene_names = adata.var
+
+        input_size = adata.shape[1]
+        layer_sizes = [input_size] + hidden_layer_sizes + [embedding_dimension]
 
         self.model = HD_AE_model(
             layer_sizes=layer_sizes,
@@ -103,6 +109,7 @@ class HD_AE:
         train_loader = DataLoader(train_set, batch_size=128, shuffle=True)
         trainer = pl.Trainer(gpus=1 if torch.cuda.is_available() else 0, max_epochs=num_epochs)
         trainer.fit(self.model, train_loader)
+        self.model.eval()
 
     def embed_data(self, eval_adata):
         eval_set = SimpleDataset(X=eval_adata.X)
@@ -117,3 +124,8 @@ class HD_AE:
 
         embedding_adata = AnnData(X=output_list, obs=eval_adata.obs)
         return embedding_adata
+
+    def save(self, dir_path, save_anndata=False):
+        # TODO: Fill in
+        return None
+
