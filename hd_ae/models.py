@@ -5,8 +5,8 @@ from anndata import AnnData
 from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader
 
-from data import DatasetWithConfounder, SimpleDataset
-from utils import one_hot, gram_matrix
+from .data import DatasetWithConfounder, SimpleDataset
+from .utils import one_hot, gram_matrix
 
 import pdb
 
