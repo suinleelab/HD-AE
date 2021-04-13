@@ -17,6 +17,10 @@ requiring any retraining of the model_. Please see <a href="404">our preprint</a
 * Share your pretrained models and reference sets of embeddings with collaborators
 * Alternatively, you can download a pretrained HD-AE model and use it to embed your data and compare with previous reference datasets
 
+### Installation
+
+The simplest way to get started with HD-AE is to clone this repo and run `pip install .`.
+
 ### Usage
 
 See the `notebooks` folder for examples of using HD-AE.
