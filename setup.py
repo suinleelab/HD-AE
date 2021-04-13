@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="hd_ae",
-    version="0.0.1",
+    version="0.0.2",
     author="Ethan Weinberger",
     author_email="ewein@cs.washington.edu",
     description="For producing pretrained embedding models of scRNA-seq data.",

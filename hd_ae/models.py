@@ -4,11 +4,12 @@ import torch.nn as nn
 from anndata import AnnData
 from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader
+import os
+import numpy as np
+import pickle
 
 from .data import DatasetWithConfounder, SimpleDataset
 from .utils import one_hot, gram_matrix
-
-import pdb
 
 
 class HD_AE_model(pl.LightningModule):
@@ -85,10 +86,22 @@ class HD_AE_model(pl.LightningModule):
 
 
 class HD_AE:
-    def __init__(self, adata, batch_key, hidden_layer_sizes, embedding_dimension, learning_rate=1e-3, hsic_penalty=1):
+    def __init__(self,
+                 adata,
+                 batch_key,
+                 hidden_layer_sizes,
+                 embedding_dimension,
+                 learning_rate=1e-3,
+                 hsic_penalty=1,
+                 num_batches=None):
         self.adata = adata
+        self.var_names = self.adata.var_names.astype(str)
+
         self.batch_key = batch_key
-        self.gene_names = adata.var
+        self.hidden_layer_sizes = hidden_layer_sizes
+        self.embedding_dimension = embedding_dimension
+        self.learning_rate = learning_rate
+        self.hsic_penalty = hsic_penalty
 
         input_size = adata.shape[1]
         layer_sizes = [input_size] + hidden_layer_sizes + [embedding_dimension]
@@ -96,7 +109,7 @@ class HD_AE:
         self.model = HD_AE_model(
             layer_sizes=layer_sizes,
             lr=learning_rate,
-            num_batches=len(adata.obs[batch_key].unique()),
+            num_batches=len(adata.obs[batch_key].unique()) if not num_batches else num_batches,
             hsic_penalty=hsic_penalty
         )
 
@@ -112,7 +125,7 @@ class HD_AE:
         self.model.eval()
 
     def embed_data(self, eval_adata):
-        eval_set = SimpleDataset(X=eval_adata.X)
+        eval_set = SimpleDataset(X=eval_adata.X.copy())
         eval_loader = DataLoader(eval_set, batch_size=128)
 
         output_list = []
@@ -125,7 +138,54 @@ class HD_AE:
         embedding_adata = AnnData(X=output_list, obs=eval_adata.obs)
         return embedding_adata
 
-    def save(self, dir_path, save_anndata=False):
-        # TODO: Fill in
-        return None
+    def save(self, dir_path, overwrite=False, save_anndata=False):
+        if not os.path.exists(dir_path) or overwrite:
+            os.makedirs(dir_path, exist_ok=overwrite)
+        else:
+            raise ValueError(
+                "{} already exists. Please provide an unexisting directory for saving.".format(
+                    dir_path
+                )
+            )
 
+        model_save_path = os.path.join(dir_path, "model_params.pt")
+        varnames_save_path = os.path.join(dir_path, "var_names.csv")
+        params_save_path = os.path.join(dir_path, "params.pkl")
+
+        params = {
+            "batch_key": self.batch_key,
+            "hidden_layer_sizes": self.hidden_layer_sizes,
+            "embedding_dimension": self.embedding_dimension,
+            "learning_rate": self.learning_rate,
+            "hsic_penalty": self.hsic_penalty,
+            "num_batches": self.model.num_batches
+        }
+
+
+        np.savetxt(varnames_save_path, self.var_names.to_numpy(), fmt="%s")
+        torch.save(self.model.state_dict(), model_save_path)
+        pickle.dump(params, open(params_save_path, "wb"))
+
+        if save_anndata:
+            self.adata.write(os.path.join(dir_path, "adata.h5ad"))
+
+    @classmethod
+    def load(cls, dir_path):
+        model_save_path = os.path.join(dir_path, "model_params.pt")
+        varnames_save_path = os.path.join(dir_path, "var_names.csv")
+        params_save_path = os.path.join(dir_path, "params.pkl")
+
+        params = pickle.load(open(params_save_path, "rb"))
+        var_names = np.genfromtxt(varnames_save_path, delimiter=",", dtype=str)
+
+        adata = AnnData(X=np.zeros((1, len(var_names))))
+        adata.var_names = var_names
+
+        obj = HD_AE(
+            adata=adata,
+            **params
+        )
+
+        obj.model.load_state_dict(torch.load(model_save_path))
+
+        return obj
