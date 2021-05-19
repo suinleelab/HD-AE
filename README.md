@@ -17,13 +17,17 @@ requiring any retraining of the model_. Please see <a href="https://www.biorxiv.
 * Share your pretrained models and reference sets of embeddings with collaborators
 * Alternatively, you can download a pretrained HD-AE model and use it to embed your data and compare with previous reference datasets
 
-### Installation
+### Installation & Dependencies
+
+HD-AE depends on the `scanpy`, `PyTorch`, and `pytorch-lightning` packages. HD-AE was originally built with `scanpy` v1.7.1, `PyTorch` v1.8.1, and `pytorch-lightning` v.1.2.7, though it should work with future versions of these packages barring any major changes. 
 
 The simplest way to get started with HD-AE is to clone this repo and run 
 
 ```
 pip install .
 ```
+
+HD-AE and all dependencies should install in 5 minutes or less.
 
 ### Usage
 
