@@ -27,9 +27,9 @@ The simplest way to get started with HD-AE is to clone this repo and run
 pip install .
 ```
 
-HD-AE and all dependencies should install in 5 minutes or less. HD-AE was originally designed on a workstation running CentOS 7.9, but should work with any operating system with a PyTorch implementation (i.e., Windows/Mac/Linux).
+HD-AE and all dependencies should install in 5 minutes or less. HD-AE was originally designed on a workstation running CentOS 7.9, but should work with any operating system with a PyTorch implementation (i.e., Windows/Mac/Linux). When training new models, having a GPU will speed up the training process considerably, though a GPU is unnecessary if only using a pretrained model.
 
-### Usage
+### Usage & Demos
 
 See the `notebooks` folder for examples of using HD-AE.
 
